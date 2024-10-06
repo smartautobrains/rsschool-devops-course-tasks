@@ -23,7 +23,7 @@ data "aws_iam_policy_document" "github_actions_trust_policy" {
     condition {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-      values = ["repo:smartautobrains/rsschool-devops-course-tasks:*"]
+      values   = ["repo:smartautobrains/rsschool-devops-course-tasks:*"]
     }
   }
 }
