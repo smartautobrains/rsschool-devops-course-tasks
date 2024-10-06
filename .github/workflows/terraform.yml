@@ -28,6 +28,9 @@ jobs:
   terraform-plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -60,6 +63,9 @@ jobs:
   terraform-apply:
     name: Terraform Apply
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     needs: terraform-plan
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
