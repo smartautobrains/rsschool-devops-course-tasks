@@ -24,7 +24,7 @@ data "aws_iam_policy_document" "github_actions_trust_policy" {
 
     principals {
       type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.github_oidc.arn]
+      identifiers = ["arn:aws:iam::503561416646:oidc-provider/token.actions.githubusercontent.com"]
     }
 
     actions = ["sts:AssumeRoleWithWebIdentity"]
