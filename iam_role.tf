@@ -71,30 +71,26 @@ resource "aws_iam_role_policy_attachment" "eventbridge_full_access" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess"
 }
 
-resource "aws_iam_policy" "dynamodb_access" {
-  name = "DynamoDBTerraformStateLockAccess"
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "dynamodb:PutItem",
-        "dynamodb:GetItem",
-        "dynamodb:DeleteItem",
-        "dynamodb:UpdateItem",
-        "dynamodb:DescribeTable"
-      ],
-      "Resource": "arn:aws:dynamodb:eu-central-1:503561416646:table/terraform-lock-prod-table"
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_role_policy_attachment" "dynamodb_access_attachment" {
+resource "aws_iam_role_policy_attachment" "dynamodb_full_access_attachment" {
   role       = aws_iam_role.github_actions_role.name
-  policy_arn = aws_iam_policy.dynamodb_access.arn
+  policy_arn = aws_iam_policy.dynamodb_full_access.arn
+}
+
+
+resource "aws_iam_policy" "dynamodb_full_access" {
+  name        = "DynamoDBFullAccessPolicy"
+  description = "Policy that grants full access to DynamoDB"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:*"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
 }
