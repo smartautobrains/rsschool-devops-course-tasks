@@ -32,12 +32,8 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: arn:aws:iam::503561416646:role/GithubActionsRole
-          aws-region: eu-central-1
-          audience: sts.amazonaws.com
+      - name: Get OIDC Token
+        run: echo $ACTIONS_ID_TOKEN_REQUEST_TOKEN
 
       - name: Check AWS Caller Identity
         run: aws sts get-caller-identity
