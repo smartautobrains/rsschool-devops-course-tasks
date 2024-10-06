@@ -39,8 +39,9 @@ jobs:
           aws-region: eu-central-1
           audience: sts.amazonaws.com
 
-      - name: Display OIDC Token
-        run: echo "OIDC Token: $ACTIONS_ID_TOKEN_REQUEST_TOKEN"
+      - name: Use OIDC Token
+        run: |
+          echo "OIDC Token: ${{ steps.oidc-token.outputs.token }}"
 
       # Попытка использовать токен OIDC для получения временных учетных данных через AWS CLI
       - name: Assume Role and Check Identity
