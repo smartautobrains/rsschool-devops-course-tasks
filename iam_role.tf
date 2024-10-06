@@ -84,7 +84,8 @@ resource "aws_iam_policy" "dynamodb_access" {
         "dynamodb:PutItem",
         "dynamodb:GetItem",
         "dynamodb:DeleteItem",
-        "dynamodb:UpdateItem"
+        "dynamodb:UpdateItem",
+        "dynamodb:DescribeTable"
       ],
       "Resource": "arn:aws:dynamodb:eu-central-1:503561416646:table/terraform-lock-prod-table"
     }
