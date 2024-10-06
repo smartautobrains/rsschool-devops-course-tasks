@@ -1,27 +1,24 @@
 resource "aws_s3_bucket" "terraform_state_bucket" {
-  bucket = "company-terraform-state-${var.environment}-bucket"
-  acl    = "private"
-
-  versioning {
-    enabled = true
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
+  bucket = "company-terraform-state-prod-bucket-1"
 
   tags = {
-    Name        = "${var.environment} Terraform State Bucket"
-    Environment = var.environment
+    Name        = "Prod Terraform State Bucket"
+    Environment = "Prod"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "new_approach" {
+  bucket = aws_s3_bucket.terraform_state_bucket.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
   }
 }
 
 resource "aws_dynamodb_table" "terraform_lock" {
-  name         = "terraform-lock-${var.environment}-table"
+  name         = "terraform-lock-prod-table"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
 
@@ -31,7 +28,15 @@ resource "aws_dynamodb_table" "terraform_lock" {
   }
 
   tags = {
-    Name        = "${var.environment} Terraform Lock Table"
-    Environment = var.environment
+    Name        = "Prod Terraform Lock Table"
+    Environment = "Prod"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "terraform_state_versioning" {
+  bucket = aws_s3_bucket.terraform_state_bucket.bucket
+
+  versioning_configuration {
+    status = "Enabled"
   }
 }

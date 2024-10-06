@@ -1,11 +1,11 @@
 resource "aws_iam_role" "github_actions_role" {
-  name = "GithubActionsRole-${var.environment}"
+  name = "GithubActionsRole"
 
   assume_role_policy = data.aws_iam_policy_document.github_actions_trust_policy.json
 
   tags = {
-    Environment = var.environment
-    Name        = "Github Actions Role for ${var.environment}"
+    Environment = "prod"
+    Name        = "Github Actions Role"
   }
 }
 
