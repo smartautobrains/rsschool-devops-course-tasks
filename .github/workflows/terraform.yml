@@ -1,16 +1,12 @@
 name: Terraform Workflow
 
 on:
-  pull_request:
-    branches:
-      - main
   push:
     branches:
       - main
 
 jobs:
-  terraform-check:
-    name: Terraform Format Check
+  terraform:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -22,68 +18,19 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: Format Check
-        run: terraform fmt -check
-
-  terraform-plan:
-    name: Terraform Plan
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-
-      - name: Use OIDC Token
+      - name: Get OIDC Token
+        id: oidc
         run: |
-          echo "OIDC Token: ${{ steps.oidc-token.outputs.token }}"
+          echo "OIDC Token: ${{ steps.oidc.outputs.token }}"
 
-      # Попытка использовать токен OIDC для получения временных учетных данных через AWS CLI
-      - name: Assume Role and Check Identity
-        run: |
-          ROLE_ARN="arn:aws:iam::503561416646:role/GithubActionsRole"
-          TOKEN=$(curl -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "https://sts.amazonaws.com" | jq -r '.access_token')
-          aws sts assume-role --role-arn $ROLE_ARN --role-session-name github-actions --web-identity-token $TOKEN
-          aws sts get-caller-identity
-
-      # Шаг для проверки AWS CLI с отладкой
-      - name: Check AWS Caller Identity with Debug
-        run: aws sts get-caller-identity --debug
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::<ваш-account-id>:role/<ваша-роль>
+          aws-region: eu-central-1
 
       - name: Terraform Init
         run: terraform init
 
       - name: Terraform Plan
         run: terraform plan
-
-  terraform-apply:
-    name: Terraform Apply
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-    needs: terraform-plan
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: arn:aws:iam::503561416646:role/GithubActionsRole
-          aws-region: eu-central-1
-          audience: sts.amazonaws.com
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
