@@ -9,13 +9,22 @@ resource "aws_iam_role" "github_actions_role" {
   }
 }
 
+resource "aws_iam_openid_connect_provider" "github_oidc" {
+  url = "https://token.actions.githubusercontent.com"
+
+  client_id_list = ["sts.amazonaws.com"]
+
+  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
+}
+
+
 data "aws_iam_policy_document" "github_actions_trust_policy" {
   statement {
     effect = "Allow"
 
     principals {
       type        = "Federated"
-      identifiers = ["arn:aws:iam::503561416646:oidc-provider/token.actions.githubusercontent.com"]
+      identifiers = [aws_iam_openid_connect_provider.github_oidc.arn]
     }
 
     actions = ["sts:AssumeRoleWithWebIdentity"]
