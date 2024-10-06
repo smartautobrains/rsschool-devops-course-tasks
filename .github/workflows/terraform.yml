@@ -38,6 +38,9 @@ jobs:
           role-to-assume: arn:aws:iam::503561416646:role/GithubActionsRole
           aws-region: eu-central-1
 
+      - name: Check AWS Caller Identity
+        run: aws sts get-caller-identity
+
       - name: Terraform Init
         run: terraform init
 
